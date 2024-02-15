@@ -18,6 +18,10 @@ namespace Kootenpv.Contractions
             leftovers = JsonConvert.DeserializeObject<Dictionary<string, string>>(System.IO.File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "data", "leftovers_dict.json")));
             slang = JsonConvert.DeserializeObject<Dictionary<string, string>>(System.IO.File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "data", "slang_dict.json")));
 
+            contractions = contractions.ToDictionary(entry => entry.Key.ToLower(), entry => entry.Value.ToLower());
+            leftovers = leftovers.ToDictionary(entry => entry.Key.ToLower(), entry => entry.Value.ToLower());
+            slang = slang.ToDictionary(entry => entry.Key.ToLower(), entry => entry.Value.ToLower());
+
             string[] months = new string[]
             {
                 "january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"
@@ -27,24 +31,22 @@ namespace Kootenpv.Contractions
             {
                 contractions.Add(months[i].Substring(0, 3) + ".", months[i]);
             }
-            contractions = contractions.Concat(contractions.Select(kvp => new KeyValuePair<string, string>(kvp.Key.Replace("'", "’"), kvp.Value))).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-            leftovers = leftovers.Concat(leftovers.Select(kvp => new KeyValuePair<string, string>(kvp.Key.Replace("'", "’"), kvp.Value))).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
             string[] words = text.Split(' ');
 
             for (int i = 0; i < words.Length; i++)
             {
-                if (contractions.ContainsKey(words[i]))
+                if (contractions.ContainsKey(words[i].ToLower()))
                 {
-                    words[i] = contractions[words[i]];
+                    words[i] = contractions[words[i].ToLower()];
                 }
-                else if (leftovers.ContainsKey(words[i]))
+                else if (leftovers.ContainsKey(words[i].ToLower()))
                 {
-                    words[i] = leftovers[words[i]];
+                    words[i] = leftovers[words[i].ToLower()];
                 }
-                else if (slang.ContainsKey(words[i]))
+                else if (slang.ContainsKey(words[i].ToLower()))
                 {
-                    words[i] = slang[words[i]];
+                    words[i] = slang[words[i].ToLower()];
                 }
             }
             return string.Join(" ", words);
